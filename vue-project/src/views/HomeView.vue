@@ -37,7 +37,7 @@ export default {
         await createUserWithEmailAndPassword(auth, this.email, this.password);
         this.registrationMessage = 'Registration successful!';
         this.loginMessage = ''; // Clear any previous login message
-        this.$router.push('/feed');
+        this.$router.push('/Dashboard');
       } catch (error) {
         console.error('Error registering:', error);
         this.registrationMessage = this.getRegistrationErrorMessage(error);
@@ -50,7 +50,7 @@ export default {
         await signInWithEmailAndPassword(auth, this.email, this.password);
         this.loginMessage = 'Login successful!';
         this.registrationMessage = ''; // Clear any previous registration message
-        this.$router.push('/feed');
+        this.$router.push('/Dashboard');
       } catch (error) {
         console.error('Error logging in:', error);
         this.loginMessage = this.getErrorMessage(error);
@@ -96,7 +96,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
 }
 
 form {
