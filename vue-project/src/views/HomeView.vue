@@ -1,20 +1,20 @@
 <template>
-  <div>
-    <h2>Register</h2>
-    <form @submit.prevent="register">
+  <div class="auth-container">
+    <h2>Login</h2>
+    <form @submit.prevent="login">
       <div>
         <label for="email">Email:</label>
         <input type="email" id="email" v-model="email" required>
       </div>
       <div>
-        <label for= "password">Password:</label>
+        <label for="password">Password:</label>
         <input type="password" id="password" v-model="password" required>
       </div>
-      <button type="submit">Register</button>
-      <button @click.prevent="login">Login</button>
+      <button type="submit">Login</button>
       <!-- Display registration and login error messages -->
-      <p ref="errorMessage">{{ registrationMessage || loginMessage }}</p>
+      <p ref="errorMessage" class="error-message">{{ registrationMessage || loginMessage }}</p>
     </form>
+    <p>Don't have an account? <router-link to="/register">Register</router-link></p>
   </div>
 </template>
 
@@ -89,3 +89,51 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  padding: 8px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error-message {
+  color: red;
+}
+</style>
