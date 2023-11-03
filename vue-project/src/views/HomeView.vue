@@ -35,7 +35,7 @@ export default {
     alert('Registration successful!');
     // Check the console to see if this message is logged when successful
     console.log('Redirecting to /feed');
-    router.push('/feed');
+    router.push('/dashboard');
   } catch (error) {
     console.error('Error registering:', error);
     alert('Registration failed. Please check your email and password.');

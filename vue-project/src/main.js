@@ -3,6 +3,10 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import PrimeVue from 'primevue/config'
+
+import 'primevue/resources/themes/mira/theme.css'
+
 // Import the functions you need from the SDKs you need
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -27,5 +31,6 @@ initializeApp(firebaseConfig);
 const app = createApp(App)
 
 app.use(router)
+app.use(PrimeVue)
 
 app.mount('#app')
