@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +14,12 @@ const router = createRouter({
       component: () => import('../views/Dashboard.vue')
     },
     {
+      path: '/register',
+      props: true,
+      component: () => import('../views/register.vue')
+    },
+    
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
@@ -24,4 +30,4 @@ const router = createRouter({
   ]
 })
 
-export default router
+export default router;
