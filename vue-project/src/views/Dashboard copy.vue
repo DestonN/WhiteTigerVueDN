@@ -37,11 +37,28 @@ onMounted(() => {
   <div class="max-w-full h-full grid grid-cols-1 grid-rows-3">
     <Header />
     <div class="flex justify-center max-w-full">
-      <DataTable :value="inventory" stripedRows paginator removableSort sortMode="multiple"
-        :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem"
+      <DataTable v-model:filters="filters" :value="inventory" stripedRows paginator removableSort sortMode="multiple"
+        :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem" dataKey="id" filterDisplay="menu"
+        :loading="loading"
         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
         currentPageReportTemplate="{first} to {last} of {totalRecords}"
-        class="border-2 border-black rounded-sm">
+        :globalFilterFields="['Name', 'Size', 'Description', 'Categories']" class="border-2 border-black rounded-sm">
+        <template #empty> No customers found. </template>
+        <template #loading> Loading customers data. Please wait. </template>
+        <!-- <template #paginatorstart>
+          <Button type="button" icon="pi pi-refresh" text />
+        </template>
+        <template #paginatorend>
+          <Button type="button" icon="pi pi-download" text />
+        </template> -->
+        <template #header>
+          <div class="flex justify-content-end">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText v-model="filters.value" placeholder="Keyword Search" />
+            </span>
+          </div>
+        </template>
         <Column field="Name" sortable header="Item Name"></Column>
         <Column field="Size" sortable header="Size"></Column>
         <Column field="Description" sortable header="Description"></Column>

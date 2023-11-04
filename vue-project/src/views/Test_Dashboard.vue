@@ -34,8 +34,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-full h-full grid grid-cols-1 grid-rows-3">
-    <Header />
     <div class="flex justify-center max-w-full">
       <DataTable :value="inventory" stripedRows paginator removableSort sortMode="multiple"
         :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem"
@@ -49,6 +47,4 @@ onMounted(() => {
         <Column field="Quantity" sortable header="Quantity"></Column>
       </DataTable>
     </div>
-    <Footer />
-  </div>
 </template>

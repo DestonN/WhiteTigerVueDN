@@ -11,14 +11,14 @@ const router = createRouter({
     {
       path: '/dashboard',
       props: true,
-      component: () => import('../views/Dashboard.vue')
+      component: () => import('../views/Choice.vue')
     },
     {
       path: '/register',
       props: true,
       component: () => import('../views/register.vue')
     },
-    
+
     {
       path: '/about',
       name: 'about',

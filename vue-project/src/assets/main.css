@@ -8,9 +8,12 @@
 #app {
   width: 100%;
   height: 100vh;
-  margin: 0 auto;
-  padding: 2rem;
+  /* margin: 0 auto; */
   font-weight: normal;
+}
+
+.f-text {
+  font-family: 'Yeon Sung';
 }
 
 a,
@@ -21,6 +24,7 @@ a,
 }
 
 .p-datatable {
+  min-height: 300px;
   height: fit-content;
 }
 .p-paginator {

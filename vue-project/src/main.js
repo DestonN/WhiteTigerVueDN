@@ -5,7 +5,11 @@ import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config'
 
+import Button from "primevue/button"
+
 import 'primevue/resources/themes/lara-light-teal/theme.css'
+import 'primeicons/primeicons.css'
+
 
 // Import the functions you need from the SDKs you need
 // Import the functions you need from the SDKs you need
