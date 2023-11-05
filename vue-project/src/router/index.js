@@ -6,19 +6,24 @@ const router = createRouter({
     {
       path: '/',
       props: true,
-      component: () => import('../views/HomeView.vue')
+      component: () => import('../views/Login.vue')
     },
     {
-      path: '/feed',
+      path: '/dashboard',
       props: true,
-      component: () => import('../views/feed.vue')
+      component: () => import('../views/Choice.vue')
     },
     {
       path: '/register',
       props: true,
-      component: () => import('../views/register.vue')
+      component: () => import('../views/Register.vue')
     },
-    
+    {
+      path: '/test',
+      props: true,
+      component: () => import('../views/FullDash.vue')
+    },
+
     {
       path: '/about',
       name: 'about',

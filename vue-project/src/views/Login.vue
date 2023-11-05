@@ -1,6 +1,8 @@
 <template>
+  <div class="max-w-full h-full grid grid-cols-1 grid-rows-3">
+  <Header Sign="Register"/>
   <div class="auth-container">
-    <h2>Login</h2>
+    <h2 class="text-3xl f-text">Login</h2>
     <form @submit.prevent="login">
       <div>
         <label for="email">Email:</label>
@@ -10,11 +12,15 @@
         <label for="password">Password:</label>
         <input type="password" id="password" v-model="password" required>
       </div>
-      <button type="submit">Login</button>
+      <button type="submit" class="cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg
+border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Login</button>
       <!-- Display registration and login error messages -->
       <p ref="errorMessage" class="error-message">{{ registrationMessage || loginMessage }}</p>
     </form>
     <p>Don't have an account? <router-link to="/register">Register</router-link></p>
+  </div>
+  <Footer />
   </div>
 </template>
 
@@ -37,7 +43,7 @@ export default {
         await createUserWithEmailAndPassword(auth, this.email, this.password);
         this.registrationMessage = 'Registration successful!';
         this.loginMessage = ''; // Clear any previous login message
-        this.$router.push('/feed');
+        this.$router.push('/Dashboard');
       } catch (error) {
         console.error('Error registering:', error);
         this.registrationMessage = this.getRegistrationErrorMessage(error);
@@ -50,7 +56,7 @@ export default {
         await signInWithEmailAndPassword(auth, this.email, this.password);
         this.loginMessage = 'Login successful!';
         this.registrationMessage = ''; // Clear any previous registration message
-        this.$router.push('/feed');
+        this.$router.push('/Dashboard');
       } catch (error) {
         console.error('Error logging in:', error);
         this.loginMessage = this.getErrorMessage(error);
@@ -96,7 +102,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 100%;
 }
 
 form {
@@ -124,14 +130,14 @@ input[type="password"] {
   border-radius: 4px;
 }
 
-button {
+/* button {
   padding: 8px 20px;
   background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
+} */
 
 .error-message {
   color: red;
