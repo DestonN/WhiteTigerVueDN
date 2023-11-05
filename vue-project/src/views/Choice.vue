@@ -1,9 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 
-import Header from '../components/Header.vue';
-import Footer from '../components/Footer.vue';
 import Dashboard from './Test_Dashboard.vue';
+import FullDash from './FullDash.vue';
 
 const bgColor = ref('bg-red-400');
 const tab = ref('Inventory');
@@ -17,10 +16,13 @@ const testColor = (e) => {
 
 <template>
   <div class="max-w-full h-full grid grid-cols-1 grid-rows-3">
-    <Header />
+    <Header Sign="Sign Out"/>
     <div :class="bgColor" class="w-[60%] min-w-[1150px] aspect-video border-2 place-self-center relative rounded-t-lg rounded-r-lg">
       <!-- <Dashboard /> -->
-      <div v-if="tab === 'Inventory'" class="p-[1%]"><h1 class="text-2xl f-text">Inventory</h1></div>
+      <div v-if="tab === 'Inventory'" class="p-[1%]">
+        <h1 class="text-2xl f-text">Inventory</h1>
+        <FullDash />
+      </div>
       <div v-if="tab === 'Shipments'"><h1>Shipments</h1></div>
       <div v-if="tab === 'CheckOut'"><h1>Checked Out</h1></div>
 

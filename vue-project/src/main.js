@@ -4,11 +4,32 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config'
+import ToastService from 'primevue/toastservice'
 
-import Button from "primevue/button"
+import Header from "./components/Header.vue"
+import Footer from "./components/Footer.vue"
+
+import Toolbar from 'primevue/toolbar';
+import InputText from 'primevue/inputtext';
+import Column from 'primevue/column';
+import Rating from 'primevue/rating';
+import Tag from 'primevue/tag';
+import DataTable from 'primevue/datatable';
+import Textarea from 'primevue/textarea';
+import Dropdown from 'primevue/dropdown';
+import RadioButton from 'primevue/radiobutton';
+import InputNumber from 'primevue/inputnumber';
+import Dialog from 'primevue/dialog';
+import FileUpload from 'primevue/fileupload';
+import Button from 'primevue/button';
 
 import 'primevue/resources/themes/lara-light-teal/theme.css'
-import 'primeicons/primeicons.css'
+// import 'primevue/resources/themes/bootstrap4-light-blue/theme.css'
+import 'primeicons/primeicons.css';
+
+import StyleClass from 'primevue/styleclass';
+
+
 
 
 // Import the functions you need from the SDKs you need
@@ -36,5 +57,24 @@ const app = createApp(App)
 
 app.use(router)
 app.use(PrimeVue)
+app.use(ToastService)
+
+app.directive('styleclass', StyleClass);
+
+app.component('Header', Header)
+.component('Footer', Footer)
+.component('Toolbar', Toolbar)
+.component('InputText', InputText)
+.component('Column', Column)
+.component('Rating', Rating)
+.component('Tag', Tag)
+.component('DataTable', DataTable)
+.component('Textarea', Textarea)
+.component('Dropdown', Dropdown)
+.component('ButtonArrow', Button)
+.component('RadioButton', RadioButton)
+.component('InputNumber', InputNumber)
+.component('Dialog', Dialog)
+.component('FileUpload', FileUpload)
 
 app.mount('#app')

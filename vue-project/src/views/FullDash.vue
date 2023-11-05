@@ -4,28 +4,29 @@
       <div class="card">
           <Toolbar class="mb-4">
               <template #start>
-                  <Button label="New" icon="pi pi-plus" severity="success" class="mr-2" @click="openNew" />
-                  <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" />
+                  <ButtonArrow label="New" icon="pi pi-plus" severity="success" class="mr-2" @click="openNew"></ButtonArrow>
+                  <ButtonArrow label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" />
               </template>
 
               <template #end>
                   <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" />
-                  <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)"  />
+                  <ButtonArrow label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)"  />
               </template>
           </Toolbar>
 
-          <DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id"
+          <!-- TODO Convert scrollHeight to a variable -->
+          <DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id" scrollable scrollHeight="400px"
               :paginator="true" :rows="10" :filters="filters"
               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[5,10,25]"
               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products">
               <template #header>
-                  <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+                  <div class="flex flex-wrap gap-2 align-items-center justify-between">
                       <h4 class="m-0">Manage Products</h4>
-          <span class="p-input-icon-left">
-                          <i class="pi pi-search" />
+                      <span class="p-input-icon-left">
+                          <i class="pi pi-search"></i>
                           <InputText v-model="filters['global'].value" placeholder="Search..." />
                       </span>
-        </div>
+                  </div>
               </template>
 
               <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
@@ -54,8 +55,8 @@
               </Column>
               <Column :exportable="false" style="min-width:8rem">
                   <template #body="slotProps">
-                      <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
-                      <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
+                      <ButtonArrow icon="pi pi-pencil" outlined rounded class="mr-2" @click="editProduct(slotProps.data)" />
+                      <ButtonArrow icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
                   </template>
               </Column>
           </DataTable>
@@ -93,19 +94,19 @@
           <div class="field">
               <label class="mb-3">Category</label>
               <div class="formgrid grid">
-                  <div class="field-radiobutton col-6">
+                  <div class="field-radioButton col-6">
                       <RadioButton id="category1" name="category" value="Accessories" v-model="product.category" />
                       <label for="category1">Accessories</label>
                   </div>
-                  <div class="field-radiobutton col-6">
+                  <div class="field-radioButton col-6">
                       <RadioButton id="category2" name="category" value="Clothing" v-model="product.category" />
                       <label for="category2">Clothing</label>
                   </div>
-                  <div class="field-radiobutton col-6">
+                  <div class="field-radioButton col-6">
                       <RadioButton id="category3" name="category" value="Electronics" v-model="product.category" />
                       <label for="category3">Electronics</label>
                   </div>
-                  <div class="field-radiobutton col-6">
+                  <div class="field-radioButton col-6">
                       <RadioButton id="category4" name="category" value="Fitness" v-model="product.category" />
                       <label for="category4">Fitness</label>
                   </div>
@@ -123,8 +124,8 @@
               </div>
           </div>
           <template #footer>
-              <Button label="Cancel" icon="pi pi-times" text @click="hideDialog"/>
-              <Button label="Save" icon="pi pi-check" text @click="saveProduct" />
+              <ButtonArrow label="Cancel" icon="pi pi-times" text @click="hideDialog"/>
+              <ButtonArrow label="Save" icon="pi pi-check" text @click="saveProduct" />
           </template>
       </Dialog>
 
@@ -134,8 +135,8 @@
               <span v-if="product">Are you sure you want to delete <b>{{product.name}}</b>?</span>
           </div>
           <template #footer>
-              <Button label="No" icon="pi pi-times" text @click="deleteProductDialog = false"/>
-              <Button label="Yes" icon="pi pi-check" text @click="deleteProduct" />
+              <ButtonArrow label="No" icon="pi pi-times" text @click="deleteProductDialog = false"/>
+              <ButtonArrow label="Yes" icon="pi pi-check" text @click="deleteProduct" />
           </template>
       </Dialog>
 
@@ -145,8 +146,8 @@
               <span v-if="product">Are you sure you want to delete the selected products?</span>
           </div>
           <template #footer>
-              <Button label="No" icon="pi pi-times" text @click="deleteProductsDialog = false"/>
-              <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedProducts" />
+              <ButtonArrow label="No" icon="pi pi-times" text @click="deleteProductsDialog = false"/>
+              <ButtonArrow label="Yes" icon="pi pi-check" text @click="deleteSelectedProducts" />
           </template>
       </Dialog>
 </div>
@@ -156,7 +157,7 @@
 import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'primevue/usetoast';
-import { ProductService } from '@/service/ProductService';
+import { ProductService } from '../service/ProductService';
 
 onMounted(() => {
   ProductService.getProducts().then((data) => (products.value = data));

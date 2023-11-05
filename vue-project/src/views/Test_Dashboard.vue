@@ -6,7 +6,6 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
-import Button from 'primevue/button';
 
 
 const inventory = ref([])
