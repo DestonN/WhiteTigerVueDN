@@ -20,7 +20,7 @@ const toast = useToast();
 async function getCheckOuts() {
   let { data: Checkout, error } = await supabase
     .from('CheckedOut')
-    .select(`Check_id, Customers(First_Name, Last_Name, Email), Inventory(Name, Description, Size), Check_Out_At, Check_In_At`)
+    .select(`Check_id, Customers(First_Name, Last_Name, Email), Inventory(item_id, Name, Description, Size), Check_Out_At, Check_In_At`)
 
   Checkout.map((check) => {
     let {Email, First_Name, Last_Name } = check.Customers;
@@ -38,9 +38,9 @@ async function getCheckOuts() {
   // console.log(checkouts)
 }
 
-const setCheckIn = async (id, time) => {
+const setCheckIn = async (item_id, id, time) => {
 
-  console.log(id, time)
+  // console.log(item_id, id, time)
 
   let dateHolder = new Date(time).toUTCString()
 
@@ -49,9 +49,15 @@ const setCheckIn = async (id, time) => {
   .update({ 'Check_In_At': dateHolder })
   .eq('Check_id', id)
 
-  console.log(data, error)
+  // console.log(data, error)
+
+  UpdateQuantity(item_id, 1);
 
   getCheckOuts()
+}
+
+const UpdateQuantity = async (id, q) => {
+  const { data, error } = await supabase.rpc('update_inventory_quantity', { p_item_id: id, p_quantity_change: q })
 }
 
 const exportCSV = () => {
@@ -124,7 +130,7 @@ onMounted(() => {
         <template #body="slotProps">
           <div class="flex flex-nowrap gap-3" v-if="!slotProps.data.Check_In_At">
             <Calendar id="date" v-model="slotProps.data.datetime" showIcon showTime hourFormat="12" :maxDate="new Date()"/>
-            <ButtonArrow icon="pi pi-check" @click="setCheckIn(slotProps.data.Check_id, slotProps.data.datetime)"/>
+            <ButtonArrow icon="pi pi-check" @click="setCheckIn(slotProps.data.Inventory[0].item_id, slotProps.data.Check_id, slotProps.data.datetime)"/>
           </div>
           <h1 v-else>{{ slotProps.data.Check_In_At }}</h1>
         </template>
