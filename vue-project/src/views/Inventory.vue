@@ -1,6 +1,6 @@
 <!-- ListView.vue -->
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, isMemoSame } from 'vue'
 import { supabase } from '../supabase'
 import { FilterMatchMode } from 'primevue/api';
 
@@ -12,12 +12,17 @@ const inventory = ref([]);
 const dt = ref();
 const item = ref({});
 const itemDialog = ref(false);
+const itemCheckDialog = ref(false);
+const QuantityHistory = ref(false);
 const loading = ref(true);
+const submitted = ref(false);
+const testQuan = ref(0)
+
 
 async function getInventory() {
   let { data: Inventory, error } = await supabase
     .from('Inventory')
-    .select(`Name, Size, Description, Categories(Category),Quantity`)
+    .select(`item_id, Name, Size, Description, Categories(Category),Quantity`)
 
   Inventory.map((item) => {
     item.Categories = item.Categories.Category
@@ -31,9 +36,60 @@ async function getInventory() {
 }
 
 const editQuantity = (prod) => {
-  // console.log(prod)
-  item.value = { ...prod };
+  item.value = { ID: prod.item_id, Name: prod.Name, Quantity: prod.Quantity, quan: 0 };
+  testQuan.value = prod.Quantity * -1;
   itemDialog.value = true;
+};
+const createCheckOut = (prod) => {
+  submitted.value = false;
+  item.value = { ID: prod.item_id, Name: prod.Name, quan: -1 };
+  itemCheckDialog.value = true;
+};
+
+const hideItemDialog = () => {
+  itemDialog.value = false;
+};
+const hideCheckDialog = () => {
+  submitted.value = false;
+  itemCheckDialog.value = false;
+};
+
+const saveQuantity = async () => {
+
+  UpdateQuantity(item.value.ID, item.value.quan)
+
+  getInventory();
+  itemDialog.value = false;
+  item.value = {};
+};
+
+const UpdateQuantity = async (id, q) => {
+  const { data, error } = await supabase.rpc('update_inventory_quantity', { p_item_id: id, p_quantity_change: q })
+}
+
+const saveCheckOut = async () => {
+  submitted.value = true;
+
+  if (!item.value.fName || !item.value.lName || !item.value.email || !item.value.datetime) return;
+
+  let dateHolder = new Date(item.value.datetime).toUTCString()
+  // console.log(dateHolder)
+
+  UpdateQuantity(item.value.ID, item.value.quan)
+
+  const { data, error } = await supabase.rpc('checkout', { p_first_name: item.value.fName, p_last_name: item.value.lName, p_email:item.value.email, p_item_id: item.value.ID, p_check_out_at: dateHolder })
+
+  // console.log(data, error)
+
+  itemCheckDialog.value = false;
+  item.value = {};
+
+  //TODO redirect to CheckOut Tab
+};
+
+const QuantityHist = () => {
+  console.log(QuantityHistory);
+  QuantityHistory.value = !QuantityHistory.value
 };
 
 const exportCSV = () => {
@@ -48,19 +104,24 @@ onMounted(() => {
 <template>
   <div class="card">
     <h1 class="text-3xl f-text pb-2">Inventory</h1>
-    <DataTable ref="dt" dataKey="id" :value="inventory" scrollable scrollHeight="500px" removableSort :paginator="true" :rows="5" :loading="loading"
-      :filters="filters"
+    <DataTable ref="dt" dataKey="id" :value="inventory" scrollable scrollHeight="500px" removableSort :paginator="true"
+      :rows="5" :loading="loading" :filters="filters"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
       :rowsPerPageOptions="[5, 10, 15, 20]"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products">
 
       <Toolbar class="mb-4">
         <template #start>
-          <ButtonArrow label="Quantity History" icon="pi pi-upload" severity="help" @click="" />
+          <!-- TODO Create Table for Quantity History -->
+          <ButtonArrow label="Quantity History" icon="pi pi-chevron-right" severity="help" v-if="!QuantityHistory"
+            @click="QuantityHist()" />
+          <ButtonArrow label="Quantity History" icon="pi pi-chevron-down" severity="help" v-else
+            @click="QuantityHist()" />
         </template>
-        <template #center>
-          <ButtonArrow label="Additional Features" icon="pi pi-upload" severity="help" @click="" />
-        </template>
+        <!-- <template #center>
+          TODO Create Banner for less then 5 Quantity items
+          <ButtonArrow label="Low Stock" icon="pi pi-flag" severity="danger" @click="" />
+        </template> -->
         <template #end>
           <ButtonArrow label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)" />
         </template>
@@ -83,16 +144,74 @@ onMounted(() => {
       <Column field="Description" sortable header="Description"></Column>
       <Column field="Categories" sortable header="Categories"></Column>
       <Column field="Quantity" sortable header="Quantity"></Column>
-      <!-- <Column field="inventoryStatus" header="Status" sortable style="min-width:12rem">
+      <Column :exportable="false" header="Stock Edit" style="min-width:fit-content">
         <template #body="slotProps">
-          <Tag :value="slotProps.data.inventoryStatus" :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
+          <ButtonArrow icon="pi pi-arrows-v" outlined rounded class="mr-2" @click="editQuantity(slotProps.data)" />
         </template>
-      </Column> -->
-      <Column :exportable="false" style="min-width:2rem">
+      </Column>
+      <Column expander style="width: 5rem" v-if="QuantityHistory"></Column>
+      <Column :exportable="false" header="Check Out" style="min-width:fit-content" v-else>
         <template #body="slotProps">
-          <ButtonArrow icon="pi pi-pencil" outlined rounded class="mr-2" @click="editQuantity(slotProps.data)" />
+          <ButtonArrow icon="pi pi-arrow-circle-up" outlined rounded class="mr-2"
+            @click="createCheckOut(slotProps.data)" />
         </template>
       </Column>
     </DataTable>
   </div>
+
+  <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Stock Details" :modal="true" class="p-fluid">
+    <div class="flex justify-evenly p-3">
+      <div class="flex flex-col justify-center gap-4">
+        <label class="text-xl">Item Name: {{ item.Name }}</label>
+        <label class="text-xl">Current Quantity: {{ item.Quantity }}</label>
+        <label class="text-xl">Updated Quantity: {{ item.Quantity + item.quan }}</label>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <InputNumber v-model="item.quan" showButtons buttonLayout="vertical" style="width: 4rem" :min="testQuan"
+          decrementButtonClassName="p-button-secondary" incrementButtonClassName="p-button-secondary"
+          incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" />
+      </div>
+    </div>
+    <template #footer>
+      <ButtonArrow label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+      <ButtonArrow label="Save" icon="pi pi-check" text @click="saveQuantity" />
+    </template>
+  </Dialog>
+
+  <Dialog v-model:visible="itemCheckDialog" :style="{ width: '450px' }" header="Check Out" :modal="true" class="p-fluid">
+    <div class="flex flex-col gap-4 p-3">
+      <div class="field">
+        <label for="iName" class="text-xl">Item Being Checked Out:</label>
+        <h1 id="iName">{{ item.Name }}</h1>
+      </div>
+      <div class="field">
+        <label for="fName">First Name</label>
+        <InputText id="fname" v-model.trim="item.fName" required="true" autofocus
+          :class="{ 'p-invalid': submitted && !item.fName }" />
+          <small class="p-error" v-if="submitted && !item.fName">First Name is required.</small>
+      </div>
+      <div>
+        <label for="lName">Last Name</label>
+        <InputText id="lName" v-model.trim="item.lName" required="true"
+          :class="{ 'p-invalid': submitted && !item.lName }" />
+          <small class="p-error" v-if="submitted && !item.lName">Last Name is required.</small>
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <InputText id="email" v-model.trim="item.email" required="true"
+          :class="{ 'p-invalid': submitted && !item.email }" />
+          <small class="p-error" v-if="submitted && !item.email">Email is required.</small>
+      </div>
+      <div>
+        <label for="date">Check Out Date & Time</label>
+        <Calendar id="date" v-model="item.datetime" showTime hourFormat="12"
+        required="true" :class="{ 'p-invalid': submitted && !item.datetime }"/>
+        <small class="p-error" v-if="submitted && !item.datetime">Date/Time is required.</small>
+      </div>
+    </div>
+    <template #footer>
+      <ButtonArrow label="Cancel" icon="pi pi-times" text @click="hideItemDialog" />
+      <ButtonArrow label="Save" icon="pi pi-check" text @click="saveCheckOut" />
+    </template>
+  </Dialog>
 </template>

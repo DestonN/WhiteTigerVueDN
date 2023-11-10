@@ -32,7 +32,7 @@ async function getShipments() {
 
   loading.value = false;
   shipments.value = Shipments;
-  console.log(shipments)
+  // console.log(shipments)
 }
 
 const exportCSV = () => {
@@ -70,10 +70,7 @@ onMounted(() => {
 
       <Toolbar class="mb-4">
         <template #start>
-          <ButtonArrow label="Quantity History" icon="pi pi-upload" severity="help" @click="" />
-        </template>
-        <template #center>
-          <ButtonArrow label="Additional Features" icon="pi pi-upload" severity="help" @click="" />
+          <ButtonArrow label="New" icon="pi pi-plus" @click="" />
         </template>
         <template #end>
           <ButtonArrow label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)" />
