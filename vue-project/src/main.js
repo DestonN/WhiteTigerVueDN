@@ -22,6 +22,9 @@ import InputNumber from 'primevue/inputnumber';
 import Dialog from 'primevue/dialog';
 import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
+import Toast from 'primevue/toast';
+import Calendar from 'primevue/calendar';
+import SelectButton from 'primevue/selectbutton'
 
 import 'primevue/resources/themes/lara-light-teal/theme.css'
 // import 'primevue/resources/themes/bootstrap4-light-blue/theme.css'
@@ -76,5 +79,8 @@ app.component('Header', Header)
 .component('InputNumber', InputNumber)
 .component('Dialog', Dialog)
 .component('FileUpload', FileUpload)
+.component('Toast', Toast)
+.component('Calendar', Calendar)
+.component('SelectButton', SelectButton)
 
 app.mount('#app')
