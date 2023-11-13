@@ -1,26 +1,26 @@
 <template>
   <div class="max-w-full h-full grid grid-cols-1 grid-rows-3">
-  <Header Sign="Register"/>
-  <div class="auth-container">
-    <h2 class="text-3xl f-text">Login</h2>
-    <form @submit.prevent="login">
-      <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="email" required>
-      </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" required>
-      </div>
-      <button type="submit" class="cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg
-border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Login</button>
-      <!-- Display registration and login error messages -->
-      <p ref="errorMessage" class="error-message">{{ registrationMessage || loginMessage }}</p>
-    </form>
-    <p>Don't have an account? <router-link to="/register">Register</router-link></p>
-  </div>
-  <Footer />
+    <Header Sign="Register"/>
+    <div class="auth-container">
+      <h2 class="text-3xl f-text">Login</h2>
+      <form @submit.prevent="login">
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="email" required>
+        </div>
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" id="password" v-model="password" required>
+        </div>
+        <button type="submit" class="cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg
+  border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+  active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Login</button>
+        <!-- Display registration and login error messages -->
+        <p ref="errorMessage" class="error-message">{{ registrationMessage || loginMessage }}</p>
+      </form>
+      <p>Don't have an account? <router-link to="/register">Register</router-link></p>
+    </div>
+    <Footer />
   </div>
 </template>
 
