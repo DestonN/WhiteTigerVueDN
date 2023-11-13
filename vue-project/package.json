@@ -9,7 +9,10 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
+    "cors": "^2.8.5",
     "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "firebase": "^10.5.2",
     "primeicons": "^6.0.1",
     "primevue": "^3.39.0",

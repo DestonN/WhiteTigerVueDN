@@ -12,9 +12,14 @@
           <label for="password">Password:</label>
           <input type="password" id="password" v-model="password" required>
         </div>
+        <div>
+          <label for="adminPassword">Admin Password:</label>
+          <input type="password" id="adminPassword" v-model="adminPassword" required>
+        </div>
         <button class="cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg
-border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-active:border-b-[2px] active:brightness-90 active:translate-y-[2px]" type="submit">Register</button>
+          border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+          active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
+          type="submit">Register</button>
         <!-- Display registration error message -->
         <p ref="errorMessage" class="error-message">{{ registrationMessage }}</p>
       </form>
@@ -32,22 +37,45 @@ export default {
     return {
       email: '',
       password: '',
+      adminPassword: '', // Adding the admin password field
       registrationMessage: '',
     };
   },
   methods: {
     async register() {
-      const auth = getAuth();
-      try {
-        await createUserWithEmailAndPassword(auth, this.email, this.password);
-        this.registrationMessage = 'Registration successful!';
-        // Clear any previous error message
-      } catch (error) {
-        console.error('Error registering:', error);
-        this.registrationMessage = this.getRegistrationErrorMessage(error);
-      }
-    },
-    getRegistrationErrorMessage(error) {
+  const auth = getAuth();
+  try {
+    console.log('Admin Password:', this.adminPassword); // Add console.log for the adminPassword
+
+    // Log the API request to verify the admin password
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ adminPassword: this.adminPassword }),
+    };
+
+    console.log('checkAdminPassword Request:', 'http://localhost:3000/checkAdminPassword', requestOptions);
+
+    const response = await fetch('http://localhost:3000/checkAdminPassword', requestOptions);
+
+    const data = await response.json();
+
+    if (data.valid) {
+      // Proceed with user registration
+      await createUserWithEmailAndPassword(auth, this.email, this.password);
+      this.registrationMessage = 'Registration successful!';
+      this.$router.push('/Dashboard');
+    } else {
+      this.registrationMessage = 'Admin password is incorrect';
+    }
+  } catch (error) {
+    console.error('Error registering:', error);
+    this.registrationMessage = this.getRegistrationErrorMessage(error);
+  }
+},
+getRegistrationErrorMessage(error) {
       // Handle specific registration error codes
       switch (error.code) {
         case 'auth/email-already-in-use':
