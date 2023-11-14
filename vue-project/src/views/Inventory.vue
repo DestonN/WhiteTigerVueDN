@@ -3,6 +3,7 @@
 import { ref, onMounted, isMemoSame } from 'vue'
 import { supabase } from '../supabase'
 import { FilterMatchMode } from 'primevue/api';
+import { format } from 'date-fns';
 
 const filters = ref({
   'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -27,6 +28,11 @@ async function getInventory() {
 
   Inventory.map((item) => {
     item.Categories = item.Categories.Category
+    if (item.InventoryHistory) {
+      item.InventoryHistory.map((a) => {
+        a.Date_changed = format(new Date(a.Date_changed), 'eee, dd-MMM-yy h:mm a')
+      })
+    }
     if (!item.Size) item.Size = 0
     if (!item.Description) item.Description = 'None'
   })
