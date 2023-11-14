@@ -124,7 +124,7 @@ const submitShipment = async () => {
 
       updateInventory(aItem.Category, ship_id, aItem.Name, aItem.Quantity, aItem.Size, aItem.Description, aItem.PPU )
     })
-  }).then(() => getShipments())
+  }).then(setTimeout(() => getShipments(), 500))
 
   newItemCount.value = 0;
   shipmentDialog.value = false;
