@@ -11,6 +11,7 @@ const filters = ref({
 
 const pricePer = ref('Price per Unit');
 const shipments = ref();
+const categories = ref();
 const dt_ship = ref();
 const newShipment = ref({});
 const newItemCount = ref(0);
@@ -44,6 +45,19 @@ const exportCSV = () => {
   dt_ship.value.exportCSV();
 };
 
+const getCats = async () => {
+  let { data: Categories, error } = await supabase
+    .from('Categories')
+    .select(`Category`)
+
+  let ArrHolder = [];
+  Categories.map((cats) => {
+    ArrHolder.push(cats.Category);
+  });
+
+  categories.value = ArrHolder;
+}
+
 const onRowExpand = (event) => {
   toast.add({ severity: 'info', summary: 'Product Expanded', detail: event.data.Ship_id, life: 3000 });
 };
@@ -71,6 +85,7 @@ const createShipment = () => {
   newShipment.value = {};
   newItemCount.value = 0;
   newShipment.value.items = [];
+  getCats();
   addItem();
 
   shipmentDialog.value = true;
@@ -81,8 +96,17 @@ const addItem = () => {
   newShipment.value.items.push({ Name: '', Category: '', Size: 0, Description: '', PPU: 0, Quantity: 0, pricePer: '' })
 
 
-  console.log(newShipment)
-  console.log(newItemCount)
+  // console.log(newShipment)
+  // console.log(newItemCount)
+}
+
+const removeItem = () => {
+  newItemCount.value -= 1;
+  newShipment.value.items.pop()
+
+
+  // console.log(newShipment)
+  // console.log(newItemCount)
 }
 
 const getShipment = async (serial, arrival_date) => {
@@ -108,13 +132,21 @@ const updateInventory = async (category, ship_id, item, quantity, size, descript
 const submitShipment = async () => {
   submitted.value = true;
 
+  let check = false;
   let shipHolder = newShipment.value
+  // console.log(shipHolder)
 
-  if (!shipHolder.serial || !shipHolder.datetime) return;
+  if (!shipHolder.serial || !shipHolder.datetime) check = true;
+  shipHolder.items.map((item) => {
+    if (!item.Name || !item.Quantity || !item.Category || !item.PPU || !item.pricePer) check = true;
+  })
+
+  // console.log('run', check)
+  if (check) return;
 
   let dateHolder = new Date(shipHolder.datetime).toUTCString()
 
-  console.log(shipHolder)
+  // console.log(shipHolder)
 
   getShipment(shipHolder.serial, dateHolder)
   .then((ship_id) => {
@@ -221,7 +253,7 @@ onMounted(() => {
           </div>
           <div class="w-[50%]">
             <label for="itemCategory" class="text-xl">Item Category:</label>
-            <Dropdown v-model="newShipment.items[item - 1].Category" editable :options="null"
+            <Dropdown v-model="newShipment.items[item - 1].Category" editable :options="categories"
               optionlabel="category" placeholder="Add a Category" />
           </div>
         </div>
@@ -250,6 +282,7 @@ onMounted(() => {
               required.</small>
             <SelectButton v-model="newShipment.items[item - 1].pricePer"
               :options="['Price per Unit', 'Price for All']" aria-labelledby="basic" class="w-[60%]" />
+            <ButtonArrow v-if="item > 1" label="Remove Item" severity="danger" @click="removeItem" class="w-[30%]" />
           </div>
         </div>
       </div>
