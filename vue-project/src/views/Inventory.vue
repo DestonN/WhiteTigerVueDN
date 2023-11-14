@@ -17,12 +17,13 @@ const QuantityHistory = ref(false);
 const loading = ref(true);
 const submitted = ref(false);
 const testQuan = ref(0)
+const expandedRows = ref([]);
 
 
 async function getInventory() {
   let { data: Inventory, error } = await supabase
     .from('Inventory')
-    .select(`item_id, Name, Size, Description, Categories(Category),Quantity`)
+    .select(`item_id, Name, Size, Description, Categories(Category),Quantity, InventoryHistory(Date_changed, quan)`)
 
   Inventory.map((item) => {
     item.Categories = item.Categories.Category
@@ -30,7 +31,7 @@ async function getInventory() {
     if (!item.Description) item.Description = 'None'
   })
 
-  // console.log(Inventory)
+  console.log(Inventory)
   loading.value = false;
   inventory.value = Inventory;
 }
@@ -49,6 +50,7 @@ const createCheckOut = (prod) => {
 const hideItemDialog = () => {
   itemDialog.value = false;
 };
+
 const hideCheckDialog = () => {
   submitted.value = false;
   itemCheckDialog.value = false;
@@ -57,8 +59,8 @@ const hideCheckDialog = () => {
 const saveQuantity = async () => {
 
   UpdateQuantity(item.value.ID, item.value.quan)
+  .then(setTimeout(() => getInventory(), 500));
 
-  getInventory();
   itemDialog.value = false;
   item.value = {};
 };
@@ -66,6 +68,8 @@ const saveQuantity = async () => {
 const UpdateQuantity = async (id, q) => {
   const { data, error } = await supabase.rpc('update_inventory_quantity', { p_item_id: id, p_quantity_change: q })
 }
+
+const emit = defineEmits(['Checkout'])
 
 const saveCheckOut = async () => {
   submitted.value = true;
@@ -85,6 +89,7 @@ const saveCheckOut = async () => {
   item.value = {};
 
   //TODO redirect to CheckOut Tab
+  emit('Checkout')
 };
 
 const QuantityHist = () => {
@@ -104,7 +109,7 @@ onMounted(() => {
 <template>
   <div class="card">
     <h1 class="text-3xl f-text pb-2">Inventory</h1>
-    <DataTable ref="dt" dataKey="id" :value="inventory" scrollable scrollHeight="500px" removableSort :paginator="true"
+    <DataTable ref="dt" v-model:expandedRows="expandedRows" :value="inventory" scrollable scrollHeight="500px" removableSort :paginator="true"
       :rows="5" :loading="loading" :filters="filters"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
       :rowsPerPageOptions="[5, 10, 15, 20]"
@@ -156,6 +161,15 @@ onMounted(() => {
             @click="createCheckOut(slotProps.data)" />
         </template>
       </Column>
+      <template #expansion="slotProps">
+        <div class="h-min">
+          <h5 class="p-2">Changes in Quantity</h5>
+          <DataTable :value="slotProps.data.InventoryHistory" class="h-min">
+            <Column field="Date_changed" header="Date Updated"></Column>
+            <Column field="quan" header="Quantity Changed"></Column>
+          </DataTable>
+        </div>
+      </template>
     </DataTable>
   </div>
 
@@ -173,7 +187,7 @@ onMounted(() => {
       </div>
     </div>
     <template #footer>
-      <ButtonArrow label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+      <ButtonArrow label="Cancel" icon="pi pi-times" text @click="hideItemDialog" />
       <ButtonArrow label="Save" icon="pi pi-check" text @click="saveQuantity" />
     </template>
   </Dialog>

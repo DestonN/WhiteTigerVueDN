@@ -38,6 +38,25 @@ async function getCheckOuts() {
   // console.log(checkouts)
 }
 
+async function getCheckOutsFilter() {
+  let { data: Checkout, error } = await supabase
+    .from('CheckedOut')
+    .select(`Check_id, Customers(First_Name, Last_Name, Email), Inventory(item_id, Name, Description, Size), Check_Out_At, Check_In_At`)
+    .is('Check_In_At', null)
+
+  Checkout.map((check) => {
+    let {Email, First_Name, Last_Name } = check.Customers;
+    check.Check_Out_At = format(new Date(check.Check_Out_At), 'eee, dd-MMM-yy h:mm a')
+    check.Email = Email;
+    check.Name = First_Name + ' ' + Last_Name;
+    check.Inventory = [check.Inventory]
+  })
+
+  loading.value = false;
+  checkouts.value = Checkout;
+  // console.log(checkouts)
+}
+
 const setCheckIn = async (item_id, id, time) => {
 
   // console.log(item_id, id, time)
@@ -51,9 +70,8 @@ const setCheckIn = async (item_id, id, time) => {
 
   // console.log(data, error)
 
-  UpdateQuantity(item_id, 1);
-
-  getCheckOuts()
+  UpdateQuantity(item_id, 1)
+  .then(setTimeout(() => getCheckOuts(), 500));
 }
 
 const UpdateQuantity = async (id, q) => {
@@ -96,7 +114,7 @@ onMounted(() => {
 
       <Toolbar class="mb-4">
         <template #start>
-          <ButtonArrow label="No Check In" icon="pi pi-filter" severity="help" @click="" />
+          <ButtonArrow label="No Check In" icon="pi pi-filter" severity="help" @click="getCheckOutsFilter" />
         </template>
         <!-- <template #center>
           <ButtonArrow label="Additional Features" icon="pi pi-upload" severity="help" @click="" />
